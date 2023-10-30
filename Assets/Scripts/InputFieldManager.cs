@@ -59,7 +59,7 @@ public class InputFieldManager : MonoBehaviour
 
     private void InitializeProgressAndTasksText()
     {
-        progressManager = FindObjectOfType<ProgressManager>();
+        progressManager = FindFirstObjectByType<ProgressManager>();
         if (progressManager == null)
         {
             return;

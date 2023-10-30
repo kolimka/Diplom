@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8067925764752141629}
   - component: {fileID: 6526745310900263366}
   - component: {fileID: 7256744756711262022}
+  - component: {fileID: 5458836474985034519}
   m_Layer: 0
   m_Name: Hero
   m_TagString: Untagged
@@ -122,7 +123,25 @@ MonoBehaviour:
   speed: 3
   lives: 5
   jumpForce: 15
-  control: {fileID: 0}
+  knockForce: 5
+  inventory: {fileID: 0}
+  buttonInventory: {fileID: 0}
+  help: {fileID: 0}
+  task: {fileID: 0}
+--- !u!114 &5458836474985034519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740987054481719431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e4c7e671520ef14eb9222c1cdd57bda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  space: 6
+  itemImages: []
 --- !u!1 &8077424360194810330
 GameObject:
   m_ObjectHideFlags: 0

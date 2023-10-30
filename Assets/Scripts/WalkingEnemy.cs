@@ -2,32 +2,39 @@ using UnityEngine;
 
 public class WalkingEnemy : Entity
 {
-    private float speed = 3.5f;
+    public Transform platformStart; // Точка начала платформы
+    public Transform platformEnd;   // Точка конца платформы
+    private float currentPosition;   // Текущая позиция противника
+    private float speed = 3f;
     private Vector3 dir;
-    private SpriteRenderer sprite;
 
-    private void Start()
+    private void Awake()
     {
-        dir = transform.right;
+        currentPosition = transform.position.x;
+        dir = Vector3.right;
     }
-
     private void Update()
     {
-        Move(); 
+        Move();
     }
+    private void Move()
+    {
+        // Передвигаем противника
+        transform.Translate(dir * speed * Time.deltaTime);
 
+        currentPosition = transform.position.x;
+
+        // Если противник достиг начала или конца платформы, меняем направление
+        if (currentPosition <= platformStart.position.x || currentPosition >= platformEnd.position.x)
+        {
+            dir *= -1f;
+        }
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject == Hero.Instance.gameObject)
         {
             Hero.Instance.GetDamage();
         }
-    }
-
-    private void Move()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position + transform.up * 0.7f, 0.1f);
-        if (colliders.Length > 0) dir *= -1f;
-        transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, speed * Time.deltaTime);
-    }
+    }  
 }
