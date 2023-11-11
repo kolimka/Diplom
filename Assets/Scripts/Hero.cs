@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -18,6 +19,9 @@ public class Hero : Entity
     public float knockForce = 4.5f; // Сила отбрасывания
     private Vector2 lastMoveDirection = Vector2.right;
 
+    public bool canMove = true;
+    public bool canJump = true;
+
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
 
@@ -25,6 +29,7 @@ public class Hero : Entity
 
     public Canvas pause;
     private bool isPaused = false;
+    public bool allowPause = true;
 
     public Canvas inventory; // Панель инвентаря
     public Button buttonInventory;
@@ -39,6 +44,9 @@ public class Hero : Entity
     private bool isQuizActivated = false;
 
     public Canvas guide;
+
+    public Canvas deathScreen;
+    private float deathHeight = -20f;
     private void Awake()
     {
         lives = 5;
@@ -55,16 +63,16 @@ public class Hero : Entity
 
     private void Update()
     {
-        if (Input.GetButton("Horizontal"))
+        if (canMove && Input.GetButton("Horizontal"))
         {
             lastMoveDirection = new Vector2(Input.GetAxis("Horizontal"), 0);
             Run();
         }
 
-        if(isGrounded && Input.GetButtonDown("Jump"))
+        if(isGrounded && canJump && Input.GetButtonDown("Jump"))
             Jump();
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (allowPause && Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
             {
@@ -89,6 +97,12 @@ public class Hero : Entity
         {
             ChangeHealth(); // Вызываем метод обновления интерфейса
             previousHealth = health; // Обновляем предыдущее значение здоровья
+        }
+
+        if (transform.position.y < deathHeight)
+        {
+            Die();
+            deathScreen.gameObject.SetActive(true);
         }
     }
 
@@ -125,6 +139,7 @@ public class Hero : Entity
             foreach (var h in hearts)
                 h.sprite = deadHeart;
             Die();
+            deathScreen.gameObject.SetActive(true);
         }
             // Отталкивание в противоположном направлении
             if (lastMoveDirection.x > 0)
@@ -164,6 +179,13 @@ public class Hero : Entity
         isPaused = false;
         pause.gameObject.SetActive(false); // Скрываем окно паузы
     }
+
+    public void QuitToMenu()
+    {
+        Time.timeScale = 1f; // Возобновляем время перед переходом в меню
+        SceneManager.LoadScene("Menu"); // Замените "MainMenu" на имя вашей сцены меню
+    }
+
     private void GetHelp()
     {
         if (!isHelpActivated)
@@ -177,6 +199,7 @@ public class Hero : Entity
             isHelpActivated = false;
         }
     }
+
     public void CloseGuide()
     {
         guide.gameObject.SetActive(false);
@@ -194,6 +217,9 @@ public class Hero : Entity
 
             // Установите флаг, чтобы предотвратить повторную активацию
             isTaskActivated = true;
+
+            canMove = false;
+            canJump = false;
         }
         if (other.CompareTag("Quiz") && !isQuizActivated)
         {
@@ -202,6 +228,10 @@ public class Hero : Entity
             Destroy(other.gameObject);
 
             isQuizActivated = true;
+
+            allowPause = false;
+            canMove = false;
+            canJump = false;
         } 
     }
 

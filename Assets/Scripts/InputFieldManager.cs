@@ -25,6 +25,8 @@ public class InputFieldManager : MonoBehaviour
     private int currentTaskIndex = 0;
     private Dictionary<int, string> userTextByTask = new Dictionary<int, string>();
 
+    public Hero hero;
+
     private void Start()
     {
         // Здесь заполняете списки taskDescriptions и correctAnswers соответствующими данными.
@@ -214,6 +216,8 @@ public class InputFieldManager : MonoBehaviour
         if (progressManager.GetProgress() >= 0.99f)
         {
             Destroy(transform.parent.gameObject);
+            hero.canMove = true;
+            hero.canJump = true;
         }
         else
         {

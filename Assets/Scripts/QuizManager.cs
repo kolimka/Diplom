@@ -8,7 +8,11 @@ public class QuizManager : MonoBehaviour
     public TMP_InputField answerInput;
     public TextMeshProUGUI timerText;
     public float timeLimit = 10.0f;
-    private float remainingTime;
+    private float startTime;
+    private bool correctAnswerGiven = false;
+    public Canvas quiz;
+
+    public Hero hero;
 
     private string[] questions = new string[10]
     {
@@ -50,32 +54,43 @@ public class QuizManager : MonoBehaviour
     {
         if (currentQuestionIndex >= questions.Length)
         {
-            Debug.Log("Вопросы закончились!");
+            quiz.gameObject.SetActive(false);
+            hero.allowPause = true;
+            hero.canMove = true;
+            hero.canJump = true;
             return;
         }
 
         questionText.text = $"Вопрос: {questions[currentQuestionIndex]}";
         answerInput.text = "";
-        remainingTime = timeLimit;
+        answerInput.Select(); // Устанавливаем фокус на поле ввода
+        answerInput.ActivateInputField();
+        startTime = Time.realtimeSinceStartup;
         StartCoroutine(Countdown());
     }
 
     private IEnumerator Countdown()
     {
-        while (remainingTime > 0)
+        while (!correctAnswerGiven)
         {
+            float elapsedTime = Time.realtimeSinceStartup - startTime;
+            float remainingTime = Mathf.Max(0, timeLimit - elapsedTime);
             timerText.text = $"Осталось времени: {remainingTime:F1} сек.";
-            yield return new WaitForSeconds(1.0f);
-            remainingTime -= 1.0f;
-        }
 
-        timerText.text = "Время вышло!";
-        NextQuestion();
+            if (elapsedTime >= timeLimit)
+            {
+                timerText.text = "Время вышло!";
+                NextQuestion();
+            }
+
+            yield return null;
+        }
     }
 
     private void NextQuestion()
     {
         currentQuestionIndex++;
+        correctAnswerGiven = false;
         DisplayCurrentQuestion();
     }
 
@@ -87,6 +102,7 @@ public class QuizManager : MonoBehaviour
         if (playerAnswer == correctAnswer)
         {
             Debug.Log("Правильный ответ!");
+            correctAnswerGiven = true;
             NextQuestion();
         }
         else
@@ -95,4 +111,3 @@ public class QuizManager : MonoBehaviour
         }
     }
 }
-
